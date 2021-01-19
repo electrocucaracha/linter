@@ -11,6 +11,7 @@
 set -o pipefail
 set -o errexit
 set -o nounset
+set -o xtrace
 
 if ! command -v docker; then
     # NOTE: Shorten link -> https://github.com/electrocucaracha/pkg-mgr_scripts
@@ -18,7 +19,11 @@ if ! command -v docker; then
 fi
 
 rm -rf ../.tox
+
+docker run --rm -e RELENG_LINTER_TOOL="" -e DEBUG=true electrocucaracha/linter
 for tool in shellcheck hadolint; do
     docker run --rm --workdir /src -e RELENG_LINTER_TOOL="$tool" \
-    -e DEBUG=true -v "$(pwd)/../:/src" electrocucaracha/linter
+    -v "$(pwd)/../:/src" electrocucaracha/linter
 done
+docker run --rm --workdir /src -e RELENG_LINTER_TOOL="kube-linter" \
+-v "$(pwd)/k8s:/src" electrocucaracha/linter

@@ -19,6 +19,7 @@ if [ "${DEBUG:-false}" == "true" ]; then
     for tool in hadolint shellcheck tox golangci-lint; do
         $tool --version
     done
+    kube-linter version
 fi
 
 case ${RELENG_LINTER_TOOL} in
@@ -33,5 +34,8 @@ case ${RELENG_LINTER_TOOL} in
     ;;
     golangci-lint)
         CGO_ENABLED=0 golangci-lint run --enable-all ./...
+    ;;
+    kube-linter)
+        kube-linter lint -v ./
     ;;
 esac

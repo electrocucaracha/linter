@@ -3,6 +3,7 @@ FROM ubuntu:20.10 as builder
 ENV SHELLCHECK_VERSION=v0.7.1
 ENV HADOLINT_VERSION=v1.19.0
 ENV GOLANGCI_LINT_VERSION=v1.33.0
+ENV KUBE_LINTER_VERSION=0.1.6
 
 ENV DEBIAN_FRONTEND=noninteractive
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -29,6 +30,7 @@ RUN cd /opt/shellcheck-${SHELLCHECK_VERSION#v}/ && cabal install --dependencies-
 RUN cd /opt/hadolint-${HADOLINT_VERSION#v}/ && stack install
 # hadolint ignore=DL3003
 RUN cd /; wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s $GOLANGCI_LINT_VERSION
+RUN wget -c https://github.com/stackrox/kube-linter/releases/download/$KUBE_LINTER_VERSION/kube-linter-linux.tar.gz -O - | tar -xz -C /opt
 
 FROM ubuntu:20.10
 
@@ -43,6 +45,7 @@ RUN apt-get update && \
 COPY --from=builder /root/.local/bin/hadolint /usr/local/bin/hadolint
 COPY --from=builder /root/.cabal/bin/shellcheck /usr/local/bin/shellcheck
 COPY --from=builder /bin/golangci-lint /usr/local/bin/golangci-lint
+COPY --from=builder /opt/kube-linter /usr/local/bin/kube-linter
 
 COPY ./linter_entrypoint.sh /usr/local/bin/linter.sh
 
