@@ -2,3 +2,4 @@
 README.md
 tests/
 tox.ini
+Makefile
