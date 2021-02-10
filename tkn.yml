@@ -1,0 +1,38 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c)
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: linter-task
+spec:
+  params:
+    - name: linter_tool
+      description: the linter tool to be used (tox,shellcheck,hadolint,golangci-lint)
+      default: tox
+      type: string
+  resources:
+    inputs:
+      - name: repo
+        type: git
+        targetPath: src
+  steps:
+    - name: linter
+      image: electrocucaracha/linter
+      script: |
+        cd src/
+        /usr/local/bin/linter.sh
+      env:
+        - name: "RELENG_LINTER_TOOL"
+          value: "$(params.linter_tool)"
+        - name: "TOXENV"
+          value: "lint"
+        - name: "DEBUG"
+          value: "lint"
