@@ -35,4 +35,4 @@ spec:
         - name: "TOXENV"
           value: "lint"
         - name: "DEBUG"
-          value: "lint"
+          value: "true"
