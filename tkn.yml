@@ -26,6 +26,13 @@ spec:
   steps:
     - name: linter
       image: electrocucaracha/linter
+      resources:
+        limits:
+          cpu: "4.0"
+          memory: "2Gi"
+        requests: # golangci-lint requires a least 2 cpus
+          cpu: "2.0"
+          memory: "1Gi"
       script: |
         cd src/
         /usr/local/bin/linter.sh
